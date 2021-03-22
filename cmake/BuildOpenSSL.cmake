@@ -54,8 +54,32 @@ else()
         message(FATAL_ERROR "You must specify OPENSSL_BUILD_VERSION!")
     endif()
 
-    # for OpenSSL we can only use GNU make, no exotic things like Ninja (MSYS always uses GNU make)
-    find_program(MAKE_PROGRAM make)
+    if (WIN32 AND NOT CROSS)
+        # yep, windows needs special treatment, but neither cygwin nor msys, since they provide an UNIX-like environment
+        
+        if (MINGW)
+            set(OS "WIN32")
+            message(WARNING "Building on windows is experimental")
+            
+            find_program(MSYS_BASH "bash.exe" PATHS "C:/Msys/" "C:/MinGW/msys/" PATH_SUFFIXES "/1.0/bin/" "/bin/"
+                    DOC "Path to MSYS installation")
+            if (NOT MSYS_BASH)
+                message(FATAL_ERROR "Specify MSYS installation path")
+            endif(NOT MSYS_BASH)
+            
+            set(MINGW_MAKE ${CMAKE_MAKE_PROGRAM})
+            message(WARNING "Assuming your make program is a sibling of your compiler (resides in same directory)")
+        elseif(NOT (CYGWIN OR MSYS))
+            message(FATAL_ERROR "Unsupported compiler infrastructure")
+        endif(MINGW)
+        
+        set(MAKE_PROGRAM ${CMAKE_MAKE_PROGRAM})
+    elseif(NOT UNIX)
+        message(FATAL_ERROR "Unsupported platform")
+    else()
+        # for OpenSSL we can only use GNU make, no exotic things like Ninja (MSYS always uses GNU make)
+        find_program(MAKE_PROGRAM make)
+    endif()
 
     # save old git values for core.autocrlf and core.eol
     execute_process(COMMAND ${GIT_EXECUTABLE} config --global --get core.autocrlf OUTPUT_VARIABLE GIT_CORE_AUTOCRLF OUTPUT_STRIP_TRAILING_WHITESPACE)
