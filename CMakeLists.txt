@@ -24,8 +24,8 @@
 cmake_minimum_required(VERSION 3.2)
 project(openssl-cmake)
 
-set(BUILD_OPENSSL OFF CACHE BOOL "Automated OpenSSL building")
-set(OPENSSL_BUILD_VERSION OFF CACHE STRING "OpenSSL version to build")
+set(BUILD_OPENSSL ON)
+set(OPENSSL_BUILD_VERSION 1.1.1j)
 set(OPENSSL_INSTALL_MAN OFF CACHE STRING "Install man pages?")
 set(CROSS_ANDROID OFF CACHE BOOL "Cross-compiling for Android?")
 set(CROSS OFF CACHE BOOL "Cross-compiling?")
